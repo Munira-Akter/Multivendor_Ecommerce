@@ -1,3 +1,9 @@
+@php
+    $current_route = Route::current() -> getName();
+    $prefix = Request::route() -> getPrefix();
+
+@endphp
+
 <aside class="main-sidebar">
     <!-- sidebar-->
     <section class="sidebar">
@@ -17,15 +23,15 @@
       <!-- sidebar menu-->
       <ul class="sidebar-menu" data-widget="tree">
 
-		<li>
-          <a href="index.html">
+		<li class="{{ ($current_route == 'dashboard' ? 'active' : '') }}">
+          <a href="{{ route('dashboard') }}">
             <i data-feather="pie-chart"></i>
 			<span>Dashboard</span>
           </a>
         </li>
 
-        <li class="treeview">
-          <a href="#">
+        <li class="treeview {{ ($current_route == 'admin.blog.index' ? 'active' : '') }}">
+          <a href="{{ route('admin.blog.index') }}">
             <i data-feather="file-text"></i>
             <span>Blog</span>
             <span class="pull-right-container">
@@ -33,26 +39,30 @@
             </span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="{{ route('admin.blog.index') }}"><i class="ti-more"></i>All Post</a></li>
-            <li><a href="{{ route('admin.blog.create') }}"><i class="ti-more"></i>Add Post</a></li>
-            <li><a href="{{ route('admin.blog.category.show') }}"><i class="ti-more"></i>Blog Categorys</a></li>
-            <li><a href="{{ route('tag.index') }}"><i class="ti-more"></i>Blog Tags</a></li>
+            <li class=" {{ ($current_route == 'admin.blog.index' ? 'active' : '') }}"><a href="{{ route('admin.blog.index') }}"><i class="ti-more"></i>All Post</a></li>
+            <li class=" {{ ($current_route == 'admin.blog.create' ? 'active' : '') }}"><a href="{{ route('admin.blog.create') }}"><i class="ti-more"></i>Add Post</a></li>
+            <li class=" {{ ($current_route == 'admin.blog.category.show' ? 'active' : '') }}"><a href="{{ route('admin.blog.category.show') }}"><i class="ti-more"></i>Blog Categorys</a></li>
+            <li class=" {{ ($current_route == 'tag.index' ? 'active' : '') }}"><a href="{{ route('tag.index') }}"><i class="ti-more"></i>Blog Tags</a></li>
           </ul>
         </li>
 
-        <li class="treeview">
-          <a href="#">
-            <i data-feather="mail"></i> <span>Mailbox</span>
+
+
+        <li class="treeview {{ ($prefix == '/brand' ? 'active' : '') }}">
+          <a href="{{ url('/brand/') }}">
+            <i data-feather="shopping-bag"></i> <span>Product</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="mailbox_inbox.html"><i class="ti-more"></i>Inbox</a></li>
-            <li><a href="mailbox_compose.html"><i class="ti-more"></i>Compose</a></li>
-            <li><a href="mailbox_read_mail.html"><i class="ti-more"></i>Read</a></li>
+            <li class="{{ ($prefix == '/brand' ? 'active' : '') }}"><a href="{{ url('/brand/') }}"><i class="ti-more"></i>Brand</a></li>
+            <li class="{{ ($prefix == '/tag' ? 'active' : '') }}"><a href="{{ url('/tag/') }}"><i class="ti-more"></i>Tag</a></li>
+
           </ul>
         </li>
+
+
 
         <li class="treeview">
           <a href="#">

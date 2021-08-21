@@ -14,5 +14,6 @@
 	<script src="{{ asset('admin/js/toastr.min.js') }}"></script>
 	<script src="{{ asset('js/sweetalert.min.js') }}"></script>
 	<script src="{{ asset('js/ckeditor.js') }}"></script>
+	<script  type="text/javascript" charset="utf8" src="{{ asset('admin/js/dataTables.min.js') }}"></script>
 	<script src="{{ asset('admin/js/custom.js') }}"></script>
 	<script src="{{ asset('admin/js/post.js') }}"></script>

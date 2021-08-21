@@ -1,0 +1,305 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ rootNamespace }}Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class {{ class }} extends Controller
+{
+  /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+       try{
+            if(request() -> ajax()){
+            return datatables()->of(Demo::latest()->get())->addColumn('action' , function($data){
+                $btn = '<a href="" class="btn btn-sm btn-warning"><i class="fa fa-pencil-square"></i></a>
+                <a href="" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>';
+                return $btn;
+            })->rowColums(['action'])->toJson();
+        }
+
+        return view(Modell::blog.index);
+       }catch (Throwable $e) {
+        return view(Modell::blog.index);
+        }
+
+
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+
+
+    try{
+        $validated = $request->validate([
+        'name'  => 'required|unique:App\Http\Controllers|max:255',
+        'photo' => 'required|mimes:jpg,bmp,png'
+    ]);
+
+    // Upload file
+
+    $url = '';
+
+    if($request -> hasfile('photo')){
+
+        $img = $request -> file('photo');
+        $unique_name = md5(time().rand()) . '.' . $img -> getClientOriginalExtension();
+        Image::make($img)->resize(120,80)->save('uploads/folder/' . $unique_name);
+
+        $url = 'uploads/folder/'.$unique_name;
+
+    }
+
+    Demo::create([
+        'name'  => $request->name,
+        'photo' => $url
+    ]);
+
+    return true;
+
+    }catch(Throwable $err){
+        return false;
+    }
+
+
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Demo $data)
+    {
+       try{
+           return $data;
+       }catch(Throwable $err){
+        return false;
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Demo $data)
+    {
+        try{
+        $url = '';
+
+        if($request -> hasfile('new_photo')){
+
+        $img = $request -> file('photo');
+        $unique_name = md5(time().rand()) . '.' . $img -> getClientOriginalExtension();
+        Image::make($img)->resize(120,80)->save('uploads/folder/' . $unique_name);
+
+
+
+        $url = 'uploads/folder/'.$unique_name;
+
+        if(file_exists('uploads/folder/' . $request -> old_photo)) {
+            unlink('uploads/folder/' . $request -> old_photo);
+        }
+
+
+        }else{
+            $url = $request -> old_photo;
+        }
+        $request -> name = $data -> name;
+        $request -> photo = $url;
+
+        return true;
+
+
+    }catch(Throwable $err){
+
+        return false;
+
+    }
+
+}
+
+     /**
+     * Tag Index show
+     */
+
+    public function trash(){
+
+        $count = Demo::all()->count();
+        $trash_count = Demo::onlyTrashed()->count();
+        return view('Modall::admin.blog.Demo.trash' , compact('count' , 'trash_count'));
+    }
+
+
+     /**
+     * Demo Move to trash
+     */
+
+
+    public function moveTrash(Demo $trash){
+       try{
+        $trash -> delete();
+        return true;
+       }catch(Throwable $err){
+
+        return false;
+
+        }
+    }
+
+    /**
+     * tag Rocovery from trash
+     */
+
+    public function restore($id){
+
+        try{
+        $delete = Demo::withTrashed()->find($id)->restore();
+        return true;
+        }catch(Throwable $err){
+
+        return false;
+
+        }
+
+    }
+
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destory($id)
+    {
+        try{
+        $trash = Demo::find($id);
+        $trash_photo = $trash -> photo;
+        $delete = Demo::onlyTrashed() -> find($id) ->  forceDelete();
+        if(file_exists('uploads/folder/' .  $trash_photo)) {
+            unlink('uploads/folder/' .  $trash_photo);
+        }
+        return true;
+       }catch(Throwable $err){
+
+        return false;
+
+        }
+
+    }
+
+
+
+
+    //admin panel trash  show
+
+    public function trashAll(){
+        $trashs = Demo::onlyTrashed()->latest()->get();
+        $trash_count = $trashs -> count();
+        $content = '';
+        if($trash_count > 0){
+
+            $i = 1;
+
+            foreach ($trashs as $trash) {
+                $content .= '<tr>';
+                $content .= '<td>'. $i ; $i++ .'</td>';
+                $content .= '<td>'. $trash -> title .'</td>';
+
+                $content .= '<td>';
+                    foreach ($trash -> categories as $category) {
+                      $content .= '<span class="badge badge-dark">'. $category -> category_name_en .'</span>' ;
+                    }
+                $content .= '</td>';
+
+                $content .= '<td>';
+
+                foreach ($trash -> tags as $tag) {
+                     $content .= '<span class="badge badge-light">'. $tag -> tag_name_en .'</span>' ;
+                }
+                 $content .= '</td>';
+
+
+                $content .= '<td>'.  $trash ->  user -> name  . '</td>';
+                $content .= '<td>'.  $trash -> content  . '</td>';
+
+                $feature = json_decode($trash -> feature);
+
+                if($feature -> Demo_type == 'Image'){
+                    $content .=  '<td><img style="height:50px; width:50px;" src="'.asset('').'uploads/Demo/' . $feature -> image . '"></td>';
+                }
+                if($feature -> Demo_type == 'Gallery'){
+                    $content .=  '<td>';
+                    foreach($feature -> gallery as $gallary_img){
+                      $content .= '<img style="height:50px; width:50px;" src="'.asset('').'uploads/Demo/' .  $gallary_img . ' " >';
+                    }
+
+                    $content .= '</td>';
+                }
+                if($feature -> Demo_type == 'Video'){
+                    $content .=  '<td><div id="iframe_video">' . $feature -> video . '</div></td>';
+                }
+
+                if($feature -> Demo_type == 'Audio'){
+                        $content .=  '<td><audio controls><source src="uploads/Demo/'. $feature -> audio  .'" type="audio/mpeg"></audio></td>';
+                }
+
+                $content .= '<td><div class="d-flex">
+
+                <a href="#" recovery_id='. $trash -> id .' class="btn btn-info" title="Recovery tag" id="Demo_trash_recovery_id"> <i class="fa fa-refresh"></i> </a>
+                <a href="#" delete_id='. $trash -> id .' class="btn btn-danger" title="Permanently Delete" id="Demo_trash_delete_id">
+                <i class="fa fa-trash"></i></a>
+        </div></td>';
+                $content .= '</tr>';
+            }
+
+        }else{
+
+
+            $content .= '<tr>';
+            $content .= '<td colspan="9" class="text-center">No Demo Deleted Yet</td>';
+            $content .= '</tr>';
+
+
+        }
+        return $content;
+    }
+
+}

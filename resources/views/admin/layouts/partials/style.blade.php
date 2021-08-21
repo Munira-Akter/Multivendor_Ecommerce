@@ -16,6 +16,7 @@
 	<link rel="stylesheet" href="{{ asset('admin/css/style.css') }}">
 	<link rel="stylesheet" href="{{ asset('admin/css/custom.css') }}">
 	<link rel="stylesheet" href="{{ asset('admin/css/toastr.min.css') }}">
+    <link  rel="stylesheet" type="text/css" href="{{ asset('admin/css/dataTables.min.css') }}">
 	<link rel="stylesheet" href="{{ asset('admin/css/skin_color.css') }}">
 
   </head>
