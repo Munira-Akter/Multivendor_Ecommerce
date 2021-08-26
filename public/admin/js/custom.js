@@ -634,7 +634,7 @@
             serverSide: true,
 
             ajax: {
-                url: "/tag",
+                url: "/producttag",
             },
 
             columns: [{
@@ -682,7 +682,7 @@
                 $(".err").html("This field is required");
             } else {
                 $.ajax({
-                    url: "/tag",
+                    url: "/producttag",
                     method: "POST",
                     data: new FormData(this),
                     contentType: false,
@@ -705,7 +705,7 @@
         $(document).on("click", "#producttag_edit_id", function() {
             let id = $(this).attr("producttag_edit");
             $.ajax({
-                url: "tag/edit/" + id,
+                url: "producttag/edit/" + id,
                 success: function(output) {
                     $("#producttag_edit_model").modal("show");
                     $('#producttag_edit_form input[name="producttag_en"]').val(
@@ -725,7 +725,7 @@
             e.preventDefault();
             let id = $('#producttag_edit_form input[name="id"]').val();
             $.ajax({
-                url: "/tag/update/" + id,
+                url: "/producttag/update/" + id,
                 method: "POST",
                 data: new FormData(this),
                 contentType: false,
@@ -751,7 +751,7 @@
             let id = $(this).attr("producttag_trash");
 
             $.ajax({
-                url: "/tag/trash/" + id,
+                url: "/producttag/trash/" + id,
                 success: function(output) {
                     if (output) {
                         $("#producttagTable").DataTable().ajax.reload();
@@ -769,7 +769,7 @@
 
         function showproducttagcount() {
             $.ajax({
-                url: "/tag/showcount",
+                url: "/producttag/showcount",
                 success: function(output) {
                     $(".count_producttag").html(output);
                 },
@@ -785,7 +785,7 @@
             serverSide: true,
 
             ajax: {
-                url: "/tag/trash",
+                url: "/producttag/trash",
             },
 
             columns: [{
@@ -821,7 +821,7 @@
             let id = $(this).attr("producttag_recovery");
 
             $.ajax({
-                url: "/tag/recovery/" + id,
+                url: "/producttag/recovery/" + id,
                 success: function(output) {
                     if (output) {
                         $("#producttagTable").DataTable().ajax.reload();
@@ -851,7 +851,7 @@
             }).then((action) => {
                 if (action) {
                     $.ajax({
-                        url: "/tag/delete/" + id,
+                        url: "/producttag/delete/" + id,
                         success: function(output) {
                             if (output) {
                                 $("#brandTrashTable").DataTable().ajax.reload();
@@ -869,6 +869,326 @@
                     toastr.success("Tag is Safe", "Safe");
                 }
             });
+        });
+
+        /**
+         * Product Part JQuery Start from Here
+         */
+        $(document).on(
+            "change",
+            '#productForm input[name="thumbnail"]',
+            function(e) {
+                e.preventDefault();
+                let img_url = URL.createObjectURL(e.target.files[0]);
+                $("#product_thumbnail_img")
+                    .attr("src", img_url)
+                    .css("width", "120")
+                    .css("height", "80");
+            }
+        );
+
+        window.imagePreview = function(t) {
+            if (t.files && t.files[0]) {
+                for (var i = 0; t.files.length > i; i++) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var thumbnail = "<span>";
+                        thumbnail +=
+                            '<img class="image" style="width: 120px; height: 80px; margin-right: 20px; position:relative;" class="shadow" src="' +
+                            e.target.result +
+                            '"/>';
+                        thumbnail +=
+                            '<a class="removeButton" style="z-index: 999;position: relative;right: 35px;top: -26px;"><i class="fa fa-close"></i></a>';
+                        thumbnail += "</span>";
+                        $("#image-preview").append(thumbnail);
+
+                        $(".removeButton").on("click", function() {
+                            $(this).closest("span").remove();
+                            document.getElementById("file").value = "";
+                        });
+                    };
+                    reader.readAsDataURL(t.files[i]);
+                }
+            }
+        };
+
+        /**
+         * Slider Part Javascript code start from here
+         */
+
+        $("#SliderTable").DataTable({
+            processing: true,
+            serverSide: true,
+
+            ajax: {
+                url: "/slider",
+            },
+
+            columns: [{
+                    data: "DT_RowIndex",
+                    name: "DT_RowIndex",
+                },
+
+                {
+                    data: "image",
+                    name: "image",
+                    render: function(data, full) {
+                        return `<img src="${data}">`;
+                    },
+                },
+                {
+                    data: "link",
+                    name: "link",
+                },
+
+                {
+                    data: "status",
+                    name: "status",
+                    render: (data, full) => {
+                        return `<div class="status-toggle">
+                        <input  name="che" type="checkbox" status_id="${data}"  ${
+                            data == 1 ? "checked" : ""
+                        } id="slider_status" class="check post_check" >
+                        <label class="checktoggle">${
+                            data == 1 ? "Active" : "Inactive"
+                        }</label>
+                    </div>`;
+                    },
+                },
+                {
+                    data: "action",
+                    name: "action",
+                },
+            ],
+        });
+
+        // Slider Status change
+
+        $(document).on(
+            "change",
+            '#slideradd input[name="image"]',
+            function(e) {
+                let img_url = URL.createObjectURL(e.target.files[0]);
+
+                $("#slider_img")
+                    .attr("src", img_url)
+                    .css("width", "120")
+                    .css("height", "80");
+            }
+        );
+
+        // Add Slider
+        $(document).on("submit", "#slideradd", function(e) {
+            e.preventDefault();
+            let slider_img = $('#slideradd input[name="image"]').val();
+
+            let link = $('#slideradd input[name="link"]').val();
+
+            if (link == "" || slider_img == "") {
+                $(".err").html("This field is required");
+            } else {
+                $.ajax({
+                    url: "/slider/store",
+                    method: "POST",
+                    data: new FormData(this),
+                    contentType: false,
+                    processData: false,
+                    success: function(output) {
+                        if (output) {
+                            $("#SliderTable").DataTable().ajax.reload();
+                            $("#slideradd")[0].reset();
+                            $("#slider_img")
+                                .attr("src", "")
+                                .css("width", "0")
+                                .css("height", "0");
+                            toastr.success("Slider Added Succeefully", "Add");
+                        } else {
+                            toastr.error("Something goes wrong!", "Error");
+                        }
+                    },
+                });
+            }
+        });
+
+        // slider Edit Code start from here
+
+        $(document).on("click", "#slider_edit_id", function(e) {
+            e.preventDefault();
+            let id = $(this).attr("slider_edit");
+
+            $.ajax({
+                url: "/slider/edit/" + id,
+                success: function(output) {
+                    if (output) {
+                        $("#slider_edit_model").modal("show");
+                        $('#slider_edit_form input[name="link"]').val(
+                            output.link
+                        );
+                        $('#slider_edit_form input[name="old_image"]').val(
+                            output.image
+                        );
+                        $("#slider_edit_form #slider_up_img").attr(
+                            "src",
+                            output.image
+                        );
+                        $('#slider_edit_form input[name="id"]').val(output.id);
+                    } else {
+                        toastr.error("Something goes wrong!", "Error");
+                    }
+                },
+            });
+        });
+
+        /**
+         * Blog category Edit data Update
+         */
+
+        $(document).on("submit", "#slider_edit_form", function(e) {
+            e.preventDefault();
+            let id = $('#slider_edit_form input[name="id"] ').val();
+
+            $.ajax({
+                url: "/slider/update/" + id,
+                method: "POST",
+                data: new FormData(this),
+                contentType: false,
+                processData: false,
+                success: function(output) {
+                    if (output) {
+                        $("#SliderTable").DataTable().ajax.reload();
+                        $("#slider_edit_form")[0].reset();
+                        $("#slider_up_img")
+                            .attr("src", "")
+                            .css("width", "0")
+                            .css("height", "0");
+                        $("#slider_edit_model").modal("hide");
+                        toastr.success("Slider Updated Succeefully", "Update");
+                    } else {
+                        toastr.error("Something goes wrong!", "Error");
+                    }
+                },
+            });
+        });
+
+        $(document).on(
+            "change",
+            '#slider_edit_form input[name="new_image"]',
+            function(e) {
+                let img_url = URL.createObjectURL(e.target.files[0]);
+                $("#slider_up_img")
+                    .attr("src", img_url)
+                    .css("width", "500")
+                    .css("height", "200");
+            }
+        );
+
+        // Slider delete code start from here
+
+        $(document).on("click", "#slider_fdel_id", function(e) {
+            e.preventDefault();
+            let id = $(this).attr("slider_trash");
+
+            swal({
+                title: "Deleted",
+                text: "Are you sure , You want Delete this Slider Parmanently?",
+                icon: "error",
+                dangerMode: true,
+                buttons: ["Cancel", "Delete"],
+            }).then((action) => {
+                if (action) {
+                    $.ajax({
+                        url: "/slider/delete/" + id,
+                        success: function(output) {
+                            if (output) {
+                                $("#SliderTable").DataTable().ajax.reload();
+                                toastr.error(
+                                    "Slider Delete Parmanently",
+                                    "Deleted"
+                                );
+                            } else {
+                                toastr.error("Something goes wrong", "Error");
+                            }
+                        },
+                    });
+                } else {
+                    toastr.success("Slider is Safe now", "Safe");
+                }
+            });
+        });
+
+        // Slider Status Update
+
+        // $(document).on("change", "#slider_status", function(e) {
+        //     e.preventDefault();
+
+        //     let status_id = $(this).attr("status_id");
+
+        //     alert(status_id);
+
+        //     $.ajax({
+        //         url: "/slider/status/" + status_id,
+        //         success: function(output) {
+        //             if (output) {
+        //                 $("#SliderTable").DataTable().ajax.reload();
+        //                 toastr.error("Slider updated", "Updated");
+        //             } else {
+        //                 toastr.error("Something goes wrong", "Error");
+        //             }
+        //         },
+        //     });
+        // });
+
+        /**
+         * category Part Code Start from Here
+         */
+
+        $(".icon-picker").iconPicker();
+
+        // ========= Category Add ==============//
+
+        $(document).on(
+            "change",
+            '#categoryForm input[name="image"]',
+            function(e) {
+                let img_url = URL.createObjectURL(e.target.files[0]);
+
+                $("#category_img")
+                    .attr("src", img_url)
+                    .css("width", "120")
+                    .css("height", "80");
+            }
+        );
+
+        // Add Category
+
+        $(document).on("submit", "#categoryForm", function(e) {
+            e.preventDefault();
+            let name_en = $('#categoryForm input[name="name_en"]').val();
+            let name_bn = $('#categoryForm input[name="name_bn"]').val();
+            if (name_en == "" || name_bn == "") {
+                $(".err").html("This field is required");
+            } else {
+                $.ajax({
+                    url: "/productcateory/store",
+                    method: "POST",
+                    data: new FormData(this),
+                    contentType: false,
+                    processData: false,
+                    success: function(output) {
+                        if (output) {
+                            // $("#SliderTable").DataTable().ajax.reload();
+                            $("#categoryForm")[0].reset();
+                            $("#category_img")
+                                .attr("src", "")
+                                .css("width", "0")
+                                .css("height", "0");
+                            toastr.success("Category Added Succeefully", "Add");
+                        } else {
+                            toastr.error("Something goes wrong!", "Error");
+                        }
+                    },
+                });
+            }
         });
     });
 })(jQuery);

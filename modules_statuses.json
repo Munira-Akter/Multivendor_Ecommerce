@@ -3,5 +3,9 @@
     "Blog": true,
     "Brand": true,
     "Model": true,
-    "Tag": true
+    "Tag": true,
+    "Producttag": true,
+    "ProductCateory": true,
+    "Product": true,
+    "Slider": true
 }

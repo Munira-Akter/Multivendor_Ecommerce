@@ -1,0 +1,13 @@
+{
+    "name": "Producttag",
+    "alias": "producttag",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Producttag\\Providers\\ProducttagServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

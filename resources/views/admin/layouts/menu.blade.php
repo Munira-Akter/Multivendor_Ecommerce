@@ -57,27 +57,29 @@
           </a>
           <ul class="treeview-menu">
             <li class="{{ ($prefix == '/brand' ? 'active' : '') }}"><a href="{{ url('/brand/') }}"><i class="ti-more"></i>Brand</a></li>
-            <li class="{{ ($prefix == '/tag' ? 'active' : '') }}"><a href="{{ url('/tag/') }}"><i class="ti-more"></i>Tag</a></li>
+            <li class="{{ ($prefix == '/producttag' ? 'active' : '') }}"><a href="{{ url('/producttag/') }}"><i class="ti-more"></i>Tag</a></li>
+
+            <li class="{{ ($prefix == '/productcateory' ? 'active' : '') }}"><a href="{{ url('/productcateory') }}"><i class="ti-more"></i>Category</a></li>
+
+            <li class="{{ ($current_route == 'product.add' ? 'active' : '') }}"><a href="{{ route('product.add')}}"><i class="ti-more"></i>Add Product</a></li>
+
+            <li class="{{ ($current_route == 'product.index' ? 'active' : '') }}"><a href="{{ route('product.index')}}"><i class="ti-more"></i>Manage Product</a></li>
 
           </ul>
         </li>
 
 
 
-        <li class="treeview">
-          <a href="#">
+        <li class=" treeview {{ ($prefix == '/slider' ? 'active' : '') }}">
+          <a href="{{ url('/slider') }}">
             <i data-feather="file"></i>
-            <span>Pages</span>
+            <span>Theme Option</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-right pull-right"></i>
             </span>
           </a>
           <ul class="treeview-menu">
-            <li><a href="profile.html"><i class="ti-more"></i>Profile</a></li>
-            <li><a href="invoice.html"><i class="ti-more"></i>Invoice</a></li>
-            <li><a href="gallery.html"><i class="ti-more"></i>Gallery</a></li>
-            <li><a href="faq.html"><i class="ti-more"></i>FAQs</a></li>
-            <li><a href="timeline.html"><i class="ti-more"></i>Timeline</a></li>
+            <li class="{{ ($prefix == '/slider' ? 'active' : '') }}"><a href="{{ url('/slider') }}"><i class="ti-more"></i>Slider</a></li>
           </ul>
         </li>
 

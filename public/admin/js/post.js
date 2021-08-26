@@ -2,6 +2,7 @@
     $(document).ready(function() {
         allPost();
         $(".select2").select2();
+
         CKEDITOR.replace("post_editor");
 
         // Post Type Slect

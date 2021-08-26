@@ -17,16 +17,25 @@ Route::group(['prefix'=> 'admin', 'middleware'=>['admin:admin']], function(){
 
 // Admin all route
 
-Route::middleware(['auth:sanctum,admin', 'verified'])->get('/admin/dashboard', function () {
-    return view('admin.index');
-})->name('dashboard');
 
-Route::get('/admin/logout',[AdminController::class, 'destroy'])->name('admin.logout');
-Route::get('/admin/profile',[AdminProfileController::class, 'index'])->name('admin.profile');
-Route::get('/admin/profile/edit',[AdminProfileController::class, 'edit'])->name('admin.profile.edit');
-Route::post('/admin/profile/update',[AdminProfileController::class, 'update'])->name('admin.profile.update');
-Route::get('/admin/profile/change-password',[AdminProfileController::class, 'changepassword'])->name('admin.profile.change_password');
-Route::post('/admin/profile/password/update',[AdminProfileController::class, 'passwordupdate'])->name('admin.password.update');
+Route::middleware(['auth:admin'])->group(function(){
+
+    Route::middleware(['auth:sanctum,admin', 'verified'])->get('/admin/dashboard', function () {
+        return view('admin.index');
+    })->name('dashboard')->middleware('auth:admin');
+
+    Route::get('/admin/logout',[AdminController::class, 'destroy'])->name('admin.logout');
+    Route::get('/admin/profile',[AdminProfileController::class, 'index'])->name('admin.profile');
+    Route::get('/admin/profile/edit',[AdminProfileController::class, 'edit'])->name('admin.profile.edit');
+    Route::post('/admin/profile/update',[AdminProfileController::class, 'update'])->name('admin.profile.update');
+    Route::get('/admin/profile/change-password',[AdminProfileController::class, 'changepassword'])->name('admin.profile.change_password');
+    Route::post('/admin/profile/password/update',[AdminProfileController::class, 'passwordupdate'])->name('admin.password.update');
+
+
+
+});
+
+
 
 
 // All Main Website Route
