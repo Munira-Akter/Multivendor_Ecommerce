@@ -16,4 +16,5 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('productcateory')->group(function() {
     Route::get('/', 'ProductCateoryController@index');
     Route::post('/store', 'ProductCateoryController@categorystore');
+    Route::get('/delete/{id:id}', 'ProductCateoryController@delete');
 });

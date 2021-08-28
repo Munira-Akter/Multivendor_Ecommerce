@@ -30237,3 +30237,11 @@ img.online {
     border-color: #0f5ef7 !important;
     background: #272e48 !important;
 }
+
+#CategoryTable ul li {
+    list-style-type: none !important;
+}
+
+#CategoryTable ul li a {
+    cursor: pointer;
+}

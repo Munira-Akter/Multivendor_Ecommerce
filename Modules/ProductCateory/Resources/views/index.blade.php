@@ -1,13 +1,11 @@
 @extends('admin.layouts.admin_master')
 
+
+
 @section('admin')
 
 <div class="container-full">
     <!-- Content Header (Page header) -->
-
-
-
-
     <!-- Main content -->
     <section class="content">
         <div class="row">
@@ -22,27 +20,13 @@
                             <table id="CategoryTable" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Serial No.</th>
+                                        <th style="width:10%;">Serial No.</th>
                                         <th>Category Name</th>
                                         <th>Icon</th>
                                         <th>Image</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <th>Serial No.</th>
-                                        <th>Man
-                                            <ul>
-                                                <li>- Man
-                                                    <ul>
-                                                        <li>-- Shirt</li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                        </th>
-                                        <th>Icon</th>
-                                        <th>Image</th>
-                                    </tr>
                                 </tbody>
 
 
@@ -99,6 +83,9 @@
                                     <div class="controls">
                                         <select name="parent_id" class="form-control">
                                             <option value="">--Select--</option>
+                                            @foreach ($child as $chil)
+                                            <option value="{{ $chil -> id }}">{{ $chil -> name_en }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>

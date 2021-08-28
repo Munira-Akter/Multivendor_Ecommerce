@@ -18,38 +18,58 @@ class ProductCateoryController extends Controller
      */
     public function index()
     {
-        try{
+        try {
+            if (request() -> ajax()) {
+                return datatables()->of(ProductCategory::latest()->whereNull('parent_id')->get())->addIndexColumn()->addColumn('category', function ($data) {
 
-            if(request() -> ajax()){
-            return datatables()->of(ProductCategory::all())->addIndexColumn()->addColumn('time' , function($data){
-               return $data -> created_at -> diffForHumans();
-            })->addColumn('action' , function($data){
+                    $content = '<ul><li>'.$data -> name_en.'<span class="float-right"><a class="text-warning" id="product_cat_edit" product_cat_edit="'.$data -> id.'"><i class="fa fa-edit"></i></a> &nbsp; <a  id="product_cat_del" product_cat_del="'.$data -> id.'" class="text-danger"><i class="fa fa-trash"></i></a></span> ';
 
-                $btn = '<div class="d-flex">
+                    $child1 = '';
+                    foreach($data -> childcats as $child1){
+                        $content .= '<ul><li> -'. $child1 -> name_en.'<span class="float-right"><a class="text-warning" id="product_cat_edit" product_cat_edit="'.$child1 -> id.'"><i class="fa fa-edit"></i></a> &nbsp; <a  id="product_cat_del" product_cat_del="'.$child1 -> id.'" class="text-danger"><i class="fa fa-trash"></i></a></span>';
+                    }
 
-                <a  href="#" brand_edit="'.$data -> id.'" class="btn btn-info" title="Edit" id="brand_edit_id">
-                <i class="fa fa-edit"></i>
-                </a> &nbsp;  &nbsp;
+                    if(!empty($child1 -> childcats)){
+                        $child2 = '';
+                        foreach($child1 -> childcats as $child2){
+                            $content .= '<ul><li> -- '. $child2 -> name_en.'<span class="float-right"><a class="text-warning" id="product_cat_edit" product_cat_edit="'.$child2 -> id.'"><i class="fa fa-edit"></i></a> &nbsp; <a  id="product_cat_del" product_cat_del="'.$child2 -> id.'" class="text-danger"><i class="fa fa-trash"></i></a></span>';
+                        }
+                    }
 
-                <a href="#" brand_trash="'.$data -> id.'" id="brand_delete_id" class="btn btn-danger" title="Move to trash">
-                <i class="fa fa-trash"></i></a>
+                    if(!empty($child2 -> childcats)){
+                        $child3 = '';
+                       foreach($child2 -> childcats as $child3){
+                        $content .= '<ul><li> --- '. $child3 -> name_en.'<span class="float-right"><a class="text-warning" id="product_cat_edit" product_cat_edit="'.$child3 -> id.'"><i class="fa fa-edit"></i></a> &nbsp; <a  id="product_cat_del" product_cat_del="'.$child3 -> id.'" class="text-danger"><i class="fa fa-trash"></i></a></span>';
+                        }
+                    }
 
-                </div>';
+                    $content .= '</li></ul></li></ul></li></ul></li></ul>';
 
-                return $btn;
+                    return $content;
 
-            })->rawColumns(['time' , 'action'])->toJson();
+
+                })->rawColumns(['category'])->toJson();
+            }
+
+
+
+            $child =  ProductCategory::latest()->get();
+
+            return view('productcateory::index', compact('child'));
+        } catch (Exception $err) {
+            $child =  ProductCategory::latest()->get();
+            return view('productcateory::index', compact('child'));
         }
-
-            return view('productcateory::index');
-        }catch(Exception $err){
-            return view('productcateory::index');
-        }
-
-
-
     }
 
+    // $child =  ProductCategory::latest()->get();
+    // $arr = [];
+
+    // foreach ($parent as $par) {
+    //     foreach ($par -> childcats as $childs) {
+    //         array_push($arr, $childs -> id);
+    //     }
+    // }
     /**
      * Show the form for creating a new resource.
      * @return Renderable
@@ -138,8 +158,33 @@ class ProductCateoryController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function destroy($id)
+    public function delete(ProductCategory $id)
     {
-        //
+
+        try{
+
+            $parent_id = $id -> parent_id;
+            $main_id = $id -> id;
+            $childs = ProductCategory::where('parent_id' , $main_id)->get();
+
+            foreach($childs as $child){
+                $child -> parent_id = $parent_id;
+                $child -> update();
+            }
+
+
+            if(file_exists($id -> image)) {
+                unlink($id -> image);
+            }
+
+            $id-> Delete();
+
+            return true;
+
+        }catch(Exception $err){
+
+            return false;
+        }
+
     }
 }

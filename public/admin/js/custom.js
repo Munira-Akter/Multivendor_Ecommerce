@@ -1159,6 +1159,49 @@
             }
         );
 
+        $("#CategoryTable").DataTable({
+            processing: true,
+            serverSide: true,
+
+            ajax: {
+                url: "/productcateory",
+            },
+
+            columns: [{
+                    data: "DT_RowIndex",
+                    name: "DT_RowIndex",
+                },
+
+                {
+                    data: "category",
+                    name: "category",
+                },
+                {
+                    data: "icon",
+                    name: "icon",
+                    render: function(data, full) {
+                        if (data == null) {
+                            return `No Icon Selected`;
+                        } else {
+                            return `<i class="${data}"></i>`;
+                        }
+                    },
+                },
+
+                {
+                    data: "image",
+                    name: "image",
+                    render: function(data, full) {
+                        if (data == null) {
+                            return `No Image Selected`;
+                        } else {
+                            return `<img src="${data}">`;
+                        }
+                    },
+                },
+            ],
+        });
+
         // Add Category
 
         $(document).on("submit", "#categoryForm", function(e) {
@@ -1176,7 +1219,7 @@
                     processData: false,
                     success: function(output) {
                         if (output) {
-                            // $("#SliderTable").DataTable().ajax.reload();
+                            $("#CategoryTable").DataTable().ajax.reload();
                             $("#categoryForm")[0].reset();
                             $("#category_img")
                                 .attr("src", "")
@@ -1189,6 +1232,42 @@
                     },
                 });
             }
+        });
+
+        $(document).on("click", "#product_cat_edit", function(e) {
+            e.preventDefault();
+            let product_cat_edit = $(this).attr("product_cat_edit");
+        });
+
+        $(document).on("click", "#product_cat_del", function(e) {
+            e.preventDefault();
+            let product_cat_del = $(this).attr("product_cat_del");
+            swal({
+                title: "Deleted",
+                text: "Are you sure , You want Delete this Category Parmanently?",
+                icon: "error",
+                dangerMode: true,
+                buttons: ["Cancel", "Delete"],
+            }).then((action) => {
+                if (action) {
+                    $.ajax({
+                        url: "/productcateory/delete/" + product_cat_del,
+                        success: function(output) {
+                            if (output) {
+                                $("#CategoryTable").DataTable().ajax.reload();
+                                toastr.error(
+                                    "category Delete Parmanently",
+                                    "Deleted"
+                                );
+                            } else {
+                                toastr.error("Something goes wrong", "Error");
+                            }
+                        },
+                    });
+                } else {
+                    toastr.success("Category is Safe now", "Safe");
+                }
+            });
         });
     });
 })(jQuery);
