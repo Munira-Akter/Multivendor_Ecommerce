@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Gallery extends Model
 {
-    use SoftDeletes;
+    use HasFactory;
 
     protected $guarded = [];
 

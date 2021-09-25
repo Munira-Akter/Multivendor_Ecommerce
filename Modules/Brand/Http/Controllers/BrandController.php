@@ -232,7 +232,7 @@ public function moveTrash(Brand $id){
 
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from storage.`x
      * @param int $id
      * @return Renderable
      */

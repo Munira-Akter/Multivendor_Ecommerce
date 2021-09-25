@@ -81,11 +81,9 @@
                                 <div class="form-group">
                                     <h5>Parent Category<span class="text-danger">*</span></h5>
                                     <div class="controls">
-                                        <select name="parent_id" class="form-control">
+                                        <select id="cat_add_from" name="parent_id" class="form-control">
                                             <option value="">--Select--</option>
-                                            @foreach ($child as $chil)
-                                            <option value="{{ $chil -> id }}">{{ $chil -> name_en }}</option>
-                                            @endforeach
+                                            <option value=""></option>
                                         </select>
                                     </div>
                                 </div>
@@ -117,7 +115,7 @@
     </section>
     <!-- /.content -->
 
-    <div class="modal center-modal fade show" id="slider_edit_model" style="padding-right: 17px; background: dark;">
+    <div class="modal center-modal fade show" id="product_cat_edit_model" style="padding-right: 17px; background: dark;">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -127,29 +125,57 @@
               </button>
             </div>
             <div class="modal-body">
-                <form method="POST" id="slider_edit_form" enctype="multipart/form-data">
+                <form method="POST" id="categoryUpdateForm" enctype="multipart/form-data">
                     @csrf
-
                     <div class="form-group">
-                        <h5>Link<span class="text-danger">*</span></h5>
+                        <h5>Name English<span class="text-danger">*</span></h5>
                         <div class="controls">
-                            <input type="text" name="link" class="form-control"><br>
-                            <input type="hidden" name="id" class="form-control">
+                            <input type="text" name="name_en" class="form-control">
                             <strong class="text-danger err"></strong>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <h5>Slider Image<span class="text-danger">*</span></h5>
+                        <h5>Name Bangla<span class="text-danger">*</span></h5>
                         <div class="controls">
-                            <input type="file" name="new_image" class="form-control">
-                            <input type="hidden"  name="old_image" class="form-control"><br><br>
-                            <img id="slider_up_img" src="" alt="">
+                            <input type="text" name="name_bn" class="form-control">
+                            <strong class="text-danger err"></strong>
                         </div>
                     </div>
 
+                <div class="form-group">
+                    <h5>Category Icon</h5>
+                    <input type="text" name="icon" class="icon-picker">
+                </div>
+
+
+
+                    <div class="form-group">
+                        <h5>Parent Category<span class="text-danger">*</span></h5>
+                        <div class="controls">
+                            <select name="parent_id" class="form-control">
+
+
+
+
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <h5>Category image</h5>
+                        <div class="controls">
+                            <input type="file" name="image" class="form-control">
+                            <input type="hidden" name="old_image" class="form-control">
+                            <br>
+                            <img id="category_edit_img" src="" alt="">
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="id" class="form-control">
+
                     <div class="text-xs-right">
-                        <button type="submit" class="btn btn-rounded btn-primary mb-5">Edit Slider</button>
+                        <button type="submit" class="btn btn-rounded btn-primary mb-5">Add Category</button>
                     </div>
                 </form>
 

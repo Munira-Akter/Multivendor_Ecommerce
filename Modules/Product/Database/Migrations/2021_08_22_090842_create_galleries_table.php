@@ -17,6 +17,7 @@ class CreateGalleriesTable extends Migration
             $table->id();
             $table->integer('product_id');
             $table->longText('gallery');
+           
             $table->timestamps();
         });
     }

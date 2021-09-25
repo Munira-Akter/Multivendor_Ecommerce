@@ -10,7 +10,7 @@
                     <div class="box-header with-border">
                         <h3 class="box-title">Product List</h3>
 
-                        <div class="count_producttag float-right">
+                        <div class="product_count float-right">
 
                         </div>
                     </div>
@@ -24,11 +24,7 @@
                                         <th>Serial No.</th>
                                         <th>Name En</th>
                                         <th>Name Bn</th>
-                                        <th>Category</th>
                                         <th>Brand</th>
-                                        <th>Tag</th>
-                                        <th>Thumbnail</th>
-                                        <th>Gallery</th>
                                         <th>Code</th>
                                         <th>Price - Sale Price</th>
                                         <th>Stock</th>

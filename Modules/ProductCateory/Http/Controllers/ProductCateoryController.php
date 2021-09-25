@@ -22,7 +22,7 @@ class ProductCateoryController extends Controller
             if (request() -> ajax()) {
                 return datatables()->of(ProductCategory::latest()->whereNull('parent_id')->get())->addIndexColumn()->addColumn('category', function ($data) {
 
-                    $content = '<ul><li>'.$data -> name_en.'<span class="float-right"><a class="text-warning" id="product_cat_edit" product_cat_edit="'.$data -> id.'"><i class="fa fa-edit"></i></a> &nbsp; <a  id="product_cat_del" product_cat_del="'.$data -> id.'" class="text-danger"><i class="fa fa-trash"></i></a></span> ';
+                    $content = '<ul><li>'.$data -> name_en.'<span class="float-right"><a class="text-warning" id="product_cat_edit"  href="'.route('cat.edit' , $data -> id).'" product_cat_edit="'.$data -> id.'"><i class="fa fa-edit"></i></a> &nbsp; <a  id="product_cat_del" product_cat_del="'.$data -> id.'" class="text-danger"><i class="fa fa-trash"></i></a></span> ';
 
                     $child1 = '';
                     foreach($data -> childcats as $child1){
@@ -53,12 +53,12 @@ class ProductCateoryController extends Controller
 
 
 
-            $child =  ProductCategory::latest()->get();
 
-            return view('productcateory::index', compact('child'));
+
+            return view('productcateory::index');
         } catch (Exception $err) {
             $child =  ProductCategory::latest()->get();
-            return view('productcateory::index', compact('child'));
+            return view('productcateory::index');
         }
     }
 
@@ -76,7 +76,15 @@ class ProductCateoryController extends Controller
      */
     public function create()
     {
-        return view('productcateory::create');
+        $category = ProductCategory::orderBy("name_en" , "ASC")->get();
+        $cat = '';
+        $cat .= '<option value="">--Select--</option>';
+        foreach($category as $cats){
+            $cat .= '<option value="'.$cats -> id .'">'.$cats -> name_en.'</option>';
+        }
+
+        return $cat;
+
     }
 
     /**
@@ -95,7 +103,7 @@ class ProductCateoryController extends Controller
 
             $img = $request -> file('image');
             $unique_name = md5(time().rand()) . '.' . $img -> getClientOriginalExtension();
-            Image::make($img)->resize(120,80)->save('uploads/category/' . $unique_name);
+            Image::make($img)->resize(200,200)->save('uploads/category/' . $unique_name);
 
             $url = 'uploads/category/'.$unique_name;
 
@@ -137,9 +145,20 @@ class ProductCateoryController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function edit($id)
+    public function edit(ProductCategory $id)
     {
-        return view('productcateory::edit');
+        $category = ProductCategory::orderBy("name_en" , "ASC")->get();
+        $cat = '';
+        $cat .= '<option value="">--Select--</option>';
+        foreach($category as $cats){
+            $cat .= '<option '.($cats -> id == $id -> parent_id  ? 'selected' : '' ).'  value="'.$cats -> id .'">'.$cats -> name_en.'</option>';
+        }
+
+
+        return [
+            'edit_data' => $id,
+            'cat' => $cat,
+        ];
     }
 
     /**
@@ -148,9 +167,63 @@ class ProductCateoryController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
+    public function catupdate(Request $request, ProductCategory $id)
     {
-        //
+
+        try{
+
+
+            $url = '';
+
+            if($request -> hasfile('image')){
+              $img = $request -> file('image');
+              $unique_name = md5(time().rand()) . '.' . $img -> getClientOriginalExtension();
+              Image::make($img)->resize(200,200)->save('uploads/category/' . $unique_name);
+
+
+
+              $url = 'uploads/category/'.$unique_name;
+
+              if(file_exists($request -> old_image)) {
+                  unlink($request -> old_image);
+              }
+
+
+              }else{
+                  $url = $request -> old_image;
+              }
+
+
+
+              $parent_id = $id -> parent_id;
+              $main_id = $id -> id;
+              $childs = ProductCategory::where('parent_id' , $main_id)->get();
+
+              foreach($childs as $child){
+                  $child -> parent_id = $parent_id;
+                  $child -> update();
+              }
+
+
+              $id -> name_en      = $request ->  name_en;
+              $id -> name_bn      = $request ->  name_bn;
+              $id -> slug_en      = str_replace('-',' ', $request -> name_en);
+              $id -> slug_bn      = str_replace('-',' ', $request -> name_bn);
+              $id -> parent_id      = $request ->  parent_id;
+              $id -> icon      = $request ->  icon;
+              $id -> image     = $url;
+              $id -> update();
+
+
+
+
+            return true;
+
+        }catch(Exception $err){
+
+            return false;
+        }
+
     }
 
     /**

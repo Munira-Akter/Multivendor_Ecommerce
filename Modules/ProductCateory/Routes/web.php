@@ -17,4 +17,7 @@ Route::prefix('productcateory')->group(function() {
     Route::get('/', 'ProductCateoryController@index');
     Route::post('/store', 'ProductCateoryController@categorystore');
     Route::get('/delete/{id:id}', 'ProductCateoryController@delete');
+    Route::get('/edit/{id:id}', 'ProductCateoryController@edit')->name('cat.edit');
+    Route::post('/update/{id:id}', 'ProductCateoryController@catupdate');
+    Route::get('/create', 'ProductCateoryController@create');
 });

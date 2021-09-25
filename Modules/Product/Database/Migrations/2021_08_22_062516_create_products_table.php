@@ -16,10 +16,8 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->integer('brand_id');
-            $table->integer('category_id')->default(1);
-            $table->integer('subcategory_id')->nullable();
-            $table->integer('sub_sub_category_id')->nullable();
-            $table->integer('tag_id');
+            $table->integer('category_id');
+            $table->string('tag_id');
             $table->string('name_en');
             $table->string('name_bn');
             $table->string('slug_en');
@@ -39,11 +37,11 @@ class CreateProductsTable extends Migration
             $table->string('short_des_bn')->nullable();
             $table->string('long_des_bn')->nullable();
             $table->string('long_des_en')->nullable();
-            $table->boolean('featured')->default(0);
-            $table->boolean('hot_deal')->default(0);
-            $table->boolean('new_arrival')->default(0);
-            $table->boolean('flas_sale')->default(0);
-            $table->boolean('status')->default(0);
+            $table->boolean('featured')->nullable();
+            $table->boolean('hot_deal')->nullable();
+            $table->boolean('new_arrival')->nullable();
+            $table->boolean('flas_sale')->nullable();
+            $table->boolean('status')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

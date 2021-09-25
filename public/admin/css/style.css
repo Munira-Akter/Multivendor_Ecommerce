@@ -30245,3 +30245,11 @@ img.online {
 #CategoryTable ul li a {
     cursor: pointer;
 }
+
+.icon-popup {
+    z-index: 9999 !important;
+}
+
+.attr-box {
+    display: none !important;
+}

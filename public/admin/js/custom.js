@@ -874,18 +874,14 @@
         /**
          * Product Part JQuery Start from Here
          */
-        $(document).on(
-            "change",
-            '#productForm input[name="thumbnail"]',
-            function(e) {
-                e.preventDefault();
-                let img_url = URL.createObjectURL(e.target.files[0]);
-                $("#product_thumbnail_img")
-                    .attr("src", img_url)
-                    .css("width", "120")
-                    .css("height", "80");
-            }
-        );
+        $(document).on("change", "#thumbnail_img_input", function(e) {
+            e.preventDefault();
+            let img_url = URL.createObjectURL(e.target.files[0]);
+            $("#product_thumbnail")
+                .attr("src", img_url)
+                .css("width", "120")
+                .css("height", "80");
+        });
 
         window.imagePreview = function(t) {
             if (t.files && t.files[0]) {
@@ -1143,6 +1139,7 @@
          */
 
         $(".icon-picker").iconPicker();
+        $(".icon-picker-edit").iconPicker();
 
         // ========= Category Add ==============//
 
@@ -1202,6 +1199,19 @@
             ],
         });
 
+        // From catagory load
+
+        allproductcat();
+
+        function allproductcat() {
+            $.ajax({
+                url: "/productcateory/create",
+                success: function(output) {
+                    $("#cat_add_from").html(output);
+                },
+            });
+        }
+
         // Add Category
 
         $(document).on("submit", "#categoryForm", function(e) {
@@ -1219,6 +1229,7 @@
                     processData: false,
                     success: function(output) {
                         if (output) {
+                            allproductcat();
                             $("#CategoryTable").DataTable().ajax.reload();
                             $("#categoryForm")[0].reset();
                             $("#category_img")
@@ -1237,7 +1248,47 @@
         $(document).on("click", "#product_cat_edit", function(e) {
             e.preventDefault();
             let product_cat_edit = $(this).attr("product_cat_edit");
+            $.ajax({
+                url: "/productcateory/edit/" + product_cat_edit,
+                success: function(output) {
+                    $("#product_cat_edit_model").modal("show");
+                    $("#categoryUpdateForm input[name='name_en']").val(
+                        output.edit_data.name_en
+                    );
+                    $("#categoryUpdateForm input[name='name_bn']").val(
+                        output.edit_data.name_bn
+                    );
+                    $("#categoryUpdateForm input[name='id']").val(
+                        output.edit_data.id
+                    );
+                    $("#categoryUpdateForm select").html(output.cat);
+                    $("#categoryUpdateForm input[name='old_image']").val(
+                        output.edit_data.image
+                    );
+                    $("#categoryUpdateForm input[name='icon']").val(
+                        output.edit_data.icon
+                    );
+
+                    $("#categoryUpdateForm img#category_edit_img")
+                        .attr("src", output.edit_data.image)
+                        .css("width", "120")
+                        .css("height", "80");
+                },
+            });
         });
+
+        $(document).on(
+            "change",
+            '#categoryUpdateForm input[name="image"]',
+            function(e) {
+                let img_url = URL.createObjectURL(e.target.files[0]);
+
+                $("#category_edit_img")
+                    .attr("src", img_url)
+                    .css("width", "120")
+                    .css("height", "80");
+            }
+        );
 
         $(document).on("click", "#product_cat_del", function(e) {
             e.preventDefault();
@@ -1254,6 +1305,7 @@
                         url: "/productcateory/delete/" + product_cat_del,
                         success: function(output) {
                             if (output) {
+                                allproductcat();
                                 $("#CategoryTable").DataTable().ajax.reload();
                                 toastr.error(
                                     "category Delete Parmanently",
@@ -1268,6 +1320,284 @@
                     toastr.success("Category is Safe now", "Safe");
                 }
             });
+        });
+
+        $(document).on("submit", "#categoryUpdateForm", function(e) {
+            e.preventDefault();
+            let id = $('#categoryUpdateForm input[name="id"] ').val();
+
+            $.ajax({
+                url: "/productcateory/update/" + id,
+                method: "POST",
+                data: new FormData(this),
+                contentType: false,
+                processData: false,
+                success: function(output) {
+                    if (output) {
+                        allproductcat();
+                        $("#CategoryTable").DataTable().ajax.reload();
+                        $("#categoryUpdateForm")[0].reset();
+                        $("#category_edit_img")
+                            .attr("src", "")
+                            .css("width", "0")
+                            .css("height", "0");
+                        $("#product_cat_edit_model").modal("hide");
+                        toastr.success(
+                            "Category Updated Succeefully",
+                            "Update"
+                        );
+                    } else {
+                        toastr.error("Something goes wrong!", "Error");
+                    }
+                },
+            });
+        });
+
+        // Product Part Start from here
+        $("#productTable").DataTable({
+            processing: true,
+            serverSide: true,
+
+            ajax: {
+                url: "/product",
+            },
+
+            columns: [{
+                    data: "DT_RowIndex",
+                    name: "DT_RowIndex",
+                },
+
+                {
+                    data: "name_en",
+                    name: "name_en",
+                },
+                {
+                    data: "name_bn",
+                    name: "name_bn",
+                },
+
+                {
+                    data: "brand",
+                    name: "brand",
+                },
+
+                {
+                    data: "code",
+                    name: "code",
+                },
+
+                {
+                    data: "price_s",
+                    name: "price_s",
+                },
+
+                {
+                    data: "stock",
+                    name: "stock",
+                },
+
+                {
+                    data: "status",
+                    name: "status",
+                    render: function(data, full) {
+                        return `${data}`;
+                    },
+                },
+
+                {
+                    data: "time",
+                    name: "time",
+                },
+
+                {
+                    data: "action",
+                    name: "action",
+                },
+            ],
+        });
+
+        // Product move to trash
+        $(document).on("click", "#product_del_id", function(e) {
+            e.preventDefault();
+            let id = $(this).attr("product_trash");
+
+            $.ajax({
+                url: "/product/trash/" + id,
+                success: function(output) {
+                    if (output) {
+                        $("#productTable").DataTable().ajax.reload();
+                        showProductcount();
+                        toastr.error(
+                            "Product move to trash Succeefully",
+                            "Trash"
+                        );
+                    } else {
+                        toastr.error("Something went wrong!", "Error");
+                    }
+                },
+            });
+        });
+
+        $("#producttrashTable").DataTable({
+            processing: true,
+            serverSide: true,
+
+            ajax: {
+                url: "/product/trash-list",
+            },
+
+            columns: [{
+                    data: "DT_RowIndex",
+                    name: "DT_RowIndex",
+                },
+
+                {
+                    data: "name_en",
+                    name: "name_en",
+                },
+                {
+                    data: "name_bn",
+                    name: "name_bn",
+                },
+
+                {
+                    data: "brand",
+                    name: "brand",
+                },
+
+                {
+                    data: "code",
+                    name: "code",
+                },
+
+                {
+                    data: "price_s",
+                    name: "price_s",
+                },
+
+                {
+                    data: "stock",
+                    name: "stock",
+                },
+
+                {
+                    data: "status",
+                    name: "status",
+                    render: function(data, full) {
+                        return `${data}`;
+                    },
+                },
+
+                {
+                    data: "time",
+                    name: "time",
+                },
+
+                {
+                    data: "action",
+                    name: "action",
+                },
+            ],
+        });
+
+        // brand index count show
+        showProductcount();
+
+        function showProductcount() {
+            $.ajax({
+                url: "/product/showcount",
+                success: function(output) {
+                    $(".product_count").html(output);
+                },
+            });
+        }
+
+        // Brand Recovery
+
+        $(document).on("click", "#product_recovery_id", function(e) {
+            e.preventDefault();
+            let id = $(this).attr("product_recovery");
+
+            $.ajax({
+                url: "/product/recovery/" + id,
+                success: function(output) {
+                    if (output) {
+                        $("#producttrashTable").DataTable().ajax.reload();
+                        showProductcount();
+                        toastr.success(
+                            "Product restore Succeefully",
+                            "Restore"
+                        );
+                    } else {
+                        toastr.error("Something went wrong!", "Error");
+                    }
+                },
+            });
+        });
+
+        $(document).on("click", "#product_fdel_id", function(e) {
+            e.preventDefault();
+            let id = $(this).attr("product_del");
+
+            swal({
+                title: "Deleted",
+                text: "Are you sure , You want Delete this brand Parmanently?",
+                icon: "error",
+                dangerMode: true,
+                buttons: ["Cancel", "Delete"],
+            }).then((action) => {
+                if (action) {
+                    $.ajax({
+                        url: "/product/delete/" + id,
+                        success: function(output) {
+                            if (output) {
+                                $("#producttrashTable")
+                                    .DataTable()
+                                    .ajax.reload();
+                                showProductcount();
+                                toastr.error(
+                                    "Product Delete Parmanently",
+                                    "Deleted"
+                                );
+                            } else {
+                                toastr.error("Something goes wrong", "Error");
+                            }
+                        },
+                    });
+                } else {
+                    toastr.success("Product is Safe", "Safe");
+                }
+            });
+        });
+
+        // Product Attribute Custom Js
+
+        let id = 1;
+        $(document).on("click", "#size_collaps", function(e) {
+            e.preventDefault();
+            $(".size_collaps_box").append(`
+            <h4 class="bg-info py-2 px-3 fs-15" type="button" data-toggle="collapse" data-target="#size-${id}" aria-expanded="false" aria-controls="collapseExample">Size-Xl</h4>
+            <div class="card text-center shadow-lg" class="collapse" id="size-${id}">
+              <div class="card-body" >
+                <p class="card-text">
+                    <input type="text" placeholder="Size Name" class="form-control" name="" id=""> <br>
+                    <input type="text" placeholder="Size Price" class="form-control" name="" id=""><br>
+                    <input type="submit" value="Add" class="float-right btn btn-sm btn-soft-primary">
+                </p>
+              </div>
+            </div>
+            `);
+            id++;
+        });
+
+        // Click variavle product btn
+        $("#Variable").change(function() {
+            let variable = $("#Variable").val();
+            if (variable == "var") {
+                $(".attr-box").show();
+            } else {
+                $(".attr-box").hide();
+            }
         });
     });
 })(jQuery);
