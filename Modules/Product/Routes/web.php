@@ -14,5 +14,5 @@ Route::prefix('product')->group(function() {
     Route::get('/trash-list', 'ProductController@trashlist');
     Route::get('/delete/{id}', 'ProductController@delete');
     Route::get('/edit/{id}', 'ProductController@edit')->name('product.edit');
-    Route::get('/test/{id}', 'ProductController@Test');
+    Route::post('/attr', 'ProductController@attr');
 });

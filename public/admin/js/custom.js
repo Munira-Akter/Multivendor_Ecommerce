@@ -1576,28 +1576,75 @@
         $(document).on("click", "#size_collaps", function(e) {
             e.preventDefault();
             $(".size_collaps_box").append(`
-            <h4 class="bg-info py-2 px-3 fs-15" type="button" data-toggle="collapse" data-target="#size-${id}" aria-expanded="false" aria-controls="collapseExample">Size-Xl</h4>
-            <div class="card text-center shadow-lg" class="collapse" id="size-${id}">
-              <div class="card-body" >
-                <p class="card-text">
-                    <input type="text" placeholder="Size Name" class="form-control" name="" id=""> <br>
-                    <input type="text" placeholder="Size Price" class="form-control" name="" id=""><br>
-                    <input type="submit" value="Add" class="float-right btn btn-sm btn-soft-primary">
-                </p>
-              </div>
-            </div>
+                <div id="size-box">
+                <div class="bg-info clearfix head">
+                    <h6 class="py-2 px-3 fs-15 float-left" type="button" data-toggle="collapse" data-target="#size-${id}" aria-expanded="false" aria-controls="collapseExample">Size-Xl</h6>
+                    <button class="close text-light pt-2  pr-2 close-btn float-right">&times;</button>
+                </div>
+
+
+                <div class="card text-center shadow-lg" class="collapse" id="size-${id}">
+                    <div class="card-body" >
+                    <p class="card-text">
+                       <form id="attr-form">
+                       <input name="attr_name[]" type="text" placeholder="Attribute Name" class="form-control" name="" id=""> <br>
+                       <textarea name="variable[]" value="" id="textarea" class="form-control" aria-invalid="false" placeholder=" Enter Variable name Use PiP Sign for sparate each Variable. e.g. S|M|L|XL" spellcheck="true"></textarea>
+                       <br>
+                       <input type="submit" value="Add" class="float-right btn btn-sm btn-soft-primary">
+                       </form>
+                    </p>
+                    </div>
+                </div>
+                </div>
             `);
             id++;
         });
 
+        $(document).on("click", ".close-btn", function() {
+            $(this).parent(".head").parent("#size-box").remove();
+            $("#attr-form input").val("");
+        });
+
         // Click variavle product btn
-        $("#Variable").change(function() {
-            let variable = $("#Variable").val();
-            if (variable == "var") {
+        $("input[name='product']").change(function() {
+            let checkrd = $(this).val();
+            if (checkrd == "var") {
                 $(".attr-box").show();
-            } else {
+                $(".attr-box").css("background", "#272E48");
+            } else if (checkrd == "gen") {
                 $(".attr-box").hide();
             }
+        });
+
+        // Attribute form sumission
+        $(document).on("submit", "#attr-form", function(e) {
+            e.preventDefault();
+            const postFormData = {
+                attr_name: $("input[name='attr_name']").val(),
+                variable: $("input[name='variable']").val(),
+                _token: $("input[name='_token']").val(),
+            };
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content"
+                    ),
+                },
+            });
+            console.log(postFormData._token);
+            $.ajax({
+                url: "/product/attr/",
+                method: "POST",
+                data: {
+                    myObj: postFormData,
+                    _token: "{{ csrf_token() }}",
+                },
+                contentType: false,
+                processData: false,
+                success: function(output) {
+                    console.log(output);
+                },
+            });
         });
     });
 })(jQuery);

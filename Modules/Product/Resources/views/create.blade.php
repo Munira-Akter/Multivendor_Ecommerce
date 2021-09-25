@@ -187,6 +187,23 @@
             </style>
 
             <div class="col-md-4">
+
+                <input type="radio" name="product" id="Genaral" value="gen" checked><label for="Genaral">Genaral Product</label>
+                <input type="radio" name="product" id="Variable" value="var"><label for="Variable">Variable Product</label>
+                <br>
+                
+
+                <div class="attr-box">
+                    <div class="box-header">Product Arrtibute</div>
+                    <div class="box-body">
+                        <button class="btn btn-primary mb-3" id="size_collaps">Add Attribute</button>
+                        <div class="size_collaps_box">
+
+                        </div>
+                    </div>
+                    <div class="box-footer"></div>
+                </div>
+                <br>
                 <div class="box">
                     <div class="box-header">
                         <h3>Product Category</h3>
@@ -266,19 +283,7 @@
                     <div class="box-footer"></div>
                 </div>
 
-                <input type="radio" name="product" id="Genaral" checked><label for="Genaral">Genaral Product</label>
-                <input type="radio" name="product" id="Variable" value="var"><label for="Variable">Variable Product</label>
 
-                <div class="attr-box">
-                    <div class="box-header">Product Arrtibute</div>
-                    <div class="box-body">
-                        <button class="btn btn-primary mb-3" id="size_collaps">Add Attribute</button>
-                        <div class="size_collaps_box">
-
-                        </div>
-                    </div>
-                    <div class="box-footer"></div>
-                </div>
 
             </div>
             <div class="box-footer">

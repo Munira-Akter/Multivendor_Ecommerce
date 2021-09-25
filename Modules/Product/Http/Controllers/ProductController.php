@@ -350,13 +350,9 @@ public function trash(Product $id){
      * @param int $id
      * @return Renderable
      */
-    public function Test($id)
+    public function attr(Request $request)
     {
-
-
-
-
-
+        return $request -> all();
 
     }
 
